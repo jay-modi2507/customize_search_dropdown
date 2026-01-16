@@ -1,0 +1,20 @@
+name: customize_search_dropdown_example
+description: Demonstrates how to use the customize_search_dropdown package.
+publish_to: 'none'
+
+environment:
+  sdk: ^3.7.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  customize_search_dropdown:
+    path: ../
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true

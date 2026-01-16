@@ -1,4 +1,4 @@
-import 'package:customize_seach_dropdown/custom_dropdown.dart';
+import 'package:customize_search_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 
 void main() {
