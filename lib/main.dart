@@ -1,3 +1,4 @@
+import 'package:customize_seach_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -7,116 +8,262 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Custom Dropdown Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  // Demo Data Models
+  String? _selectedLocalItem;
+  User? _selectedApiItem;
+  List<String> _selectedMultiItems = [];
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  // Local Data
+  final List<String> _localItems = [
+    "Apple",
+    "Banana",
+    "Cherry",
+    "Date",
+    "Elderberry",
+    "Fig",
+    "Grape",
+    "Honeydew",
+    "Kiwi",
+    "Lemon",
+    "Mango",
+    "Nectarine",
+    "Orange",
+    "Papaya",
+    "Quince",
+    "Raspberry",
+    "Strawberry",
+    "Tangerine",
+    "Ugli Fruit",
+    "Vanilla Bean",
+    "Watermelon",
+  ];
+
+  // API Simulation
+  Future<List<User>> _getUsers(int page, String? query) async {
+    await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
+
+    // Simulate a large database of users
+    final List<User> allUsers = List.generate(
+      100,
+      (index) =>
+          User(id: index, name: "User $index", email: "user$index@example.com"),
+    );
+
+    // Filter
+    final filtered =
+        query == null || query.isEmpty
+            ? allUsers
+            : allUsers
+                .where(
+                  (u) => u.name.toLowerCase().contains(query.toLowerCase()),
+                )
+                .toList();
+
+    // Pagination
+    const pageSize = 10;
+    final start = (page - 1) * pageSize;
+    if (start >= filtered.length) return [];
+
+    final end = start + pageSize;
+    return filtered.sublist(
+      start,
+      end > filtered.length ? filtered.length : end,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
+        title: const Text("Custom Dropdown Demo"),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "1. Simple Local Data Dropdown",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
+            const SizedBox(height: 10),
+            CustomDropdown<String>(
+              hintText: "Select Fruit",
+              items: _localItems,
+              selectedItem: _selectedLocalItem,
+              onChanged: (value) {
+                setState(() => _selectedLocalItem = value);
+              },
+              headerDecoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+
+            const SizedBox(height: 40),
+
+            const Text(
+              "2. Multi-Selection Dropdown",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            const SizedBox(height: 10),
+            CustomDropdown<String>(
+              hintText: "Select Multiple Fruits",
+              items: _localItems,
+              enableMultiSelection: true,
+              selectedItems: _selectedMultiItems,
+              onListChanged: (value) {
+                setState(() => _selectedMultiItems = value);
+              },
+              headerDecoration: BoxDecoration(
+                color: Colors.blue[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue),
+              ),
+            ),
+
+            const SizedBox(height: 40),
+
+            const Text(
+              "3. API Pagination + Search Dropdown",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            const Text(
+              "Simulates network delay and pagination (10 per page)",
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+            const SizedBox(height: 10),
+            CustomDropdown<User>(
+              hintText: "Select User (Async)",
+              searchHintText: "Search by name...",
+              futureRequest: _getUsers,
+              itemsPerPage: 10,
+              selectedItem: _selectedApiItem,
+
+              // Custom Label Function
+              itemLabel: (user) => user.name,
+
+              onChanged: (value) {
+                setState(() => _selectedApiItem = value);
+              },
+
+              // Custom List Item using the builder
+              listItemBuilder: (context, item, isSelected, onTap) {
+                return ListTile(
+                  selected: isSelected,
+                  selectedTileColor: Colors.deepPurple.withValues(alpha: 0.1),
+                  onTap: onTap,
+                  leading: CircleAvatar(child: Text(item.name[0])),
+                  title: Text(item.name),
+                  subtitle: Text(item.email),
+                  trailing:
+                      isSelected
+                          ? const Icon(Icons.check, color: Colors.deepPurple)
+                          : null,
+                );
+              },
+            ),
+
+            const SizedBox(height: 40),
+
+            const Text(
+              "4. Custom Styling & Header",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            const SizedBox(height: 10),
+            CustomDropdown<String>(
+              hintText: "Styled Dropdown",
+              items: _localItems,
+              selectedItem: _selectedLocalItem,
+              onChanged: (value) {
+                setState(() => _selectedLocalItem = value);
+              },
+              headerBuilder: (context, selectedItem, selectedItems) {
+                return Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Colors.blue, Colors.purple],
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        selectedItem ?? "Choose Awesome Fruit",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Icon(
+                        Icons.arrow_drop_down_circle,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                );
+              },
+              dropdownDecoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.purple.shade100),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.purple.withValues(alpha: 0.1),
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 400), // Spacing to test scrolling behavior
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+}
+
+class User {
+  final int id;
+  final String name;
+  final String email;
+
+  User({required this.id, required this.name, required this.email});
+
+  @override
+  String toString() => name;
 }
