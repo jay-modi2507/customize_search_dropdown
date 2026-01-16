@@ -2,7 +2,7 @@
 
 ## Preview
 
-![Customize Search Dropdown Demo](https://github.com/jay-modi2507/customize_search_dropdown/main/assets/demo.gif)
+![Customize Search Dropdown Demo](https://github.com/jay-modi2507/customize_search_dropdown/blob/main/assets/customize_search_dd.gif)
 
 
 A fully customizable Flutter Dropdown widget with support for:
