@@ -2,12 +2,12 @@
 
 ## Preview
 
-![Customize Search Dropdown Demo](https://github.com/jay-modi2507/customize_search_dropdown/blob/main/assets/customize_search_dd.gif)
+![Customize Search Dropdown Demo](https://raw.githubusercontent.com/jay-modi2507/customize_search_dropdown/main/assets/customize_search_dd.gif)
 
 
 A fully customizable Flutter Dropdown widget with support for:
 - 🚀 **Search** (Local and API)
-- 📄 **Pagination** (Lazy loading)
+  - 📄 **Pagination** (Lazy loading)
 - ☑️ **Multi-Selection**
 - 🎨 **Fully Customizable Styling** (Headers, List items, Decorations)
 - ↕️ **Smart Positioning** (Auto-flips based on screen space)
